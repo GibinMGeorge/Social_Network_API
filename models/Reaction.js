@@ -1,9 +1,15 @@
-const reactionSchema = new Schema({
-    reactionId: Schema.Types.ObjectId,
+const { Schema, Types } = require('mongoose');
+
+const reactionSchema = new Schema(
+  {
+    reactionId: {
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId(),
+    },
     reactionBody: {
       type: String,
       required: true,
-      maxlength: 280
+      maxLength: 280
     },
     username: {
       type: String,
@@ -11,7 +17,23 @@ const reactionSchema = new Schema({
     },
     createdAt: {
       type: Date,
-      default: Date.now,
-      get: timestamp => dateFormat(timestamp, 'mm/dd/yyyy HH:MM:ss')
-    }
-  });
+      default: Date.now(),
+
+      // Getter method to format timestamp 
+      get: function (date) {
+        let dateSplit = date.toString().split(" ");
+        return `${dateSplit[1]} ${dateSplit[2]}, ${dateSplit[3]} at ${dateSplit[4]}`;   // Output format: Apr 30, 2024 at 02:23:05
+      }
+
+    },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+      getters: true
+    },
+    id: false
+  }
+);
+
+module.exports = reactionSchema;
